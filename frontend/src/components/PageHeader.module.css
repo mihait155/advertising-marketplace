@@ -1,0 +1,29 @@
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.text {
+  min-width: 0;
+}
+
+.eyebrow {
+  margin-bottom: 6px;
+  font-size: var(--text-sm);
+}
+
+.description {
+  margin-top: 6px;
+  color: var(--text-muted);
+  max-width: 62ch;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

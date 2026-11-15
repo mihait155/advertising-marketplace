@@ -1,0 +1,26 @@
+.stars {
+  display: inline-flex;
+  gap: 1px;
+  color: #c98a12;
+  vertical-align: -2px;
+}
+
+.input {
+  display: inline-flex;
+  gap: 2px;
+  font-size: 26px;
+  color: #c98a12;
+}
+
+.option {
+  display: inline-flex;
+  padding: 2px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+}
+
+.option:hover {
+  background: var(--surface-sunken);
+}

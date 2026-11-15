@@ -1,0 +1,87 @@
+groups:
+  - name: marketplace-availability
+    rules:
+      - alert: BackendDown
+        expr: up{job="marketplace-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: The backend has not answered a metrics scrape for 2 minutes.
+
+      - alert: HighServerErrorRate
+        expr: |
+          sum(rate(http_server_requests_seconds_count{job="marketplace-backend", status=~"5.."}[5m]))
+            / sum(rate(http_server_requests_seconds_count{job="marketplace-backend"}[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: More than 5% of requests fail with a 5xx status.
+
+      - alert: SlowRequests
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job="marketplace-backend", uri!~"/api/v1/conversations/events|/ws.*"}[5m]))) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: p95 latency of API requests is above 1 second.
+
+      - alert: DatabasePoolSaturated
+        expr: max(hikaricp_connections_pending{job="marketplace-backend"}) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Requests are waiting for a database connection.
+
+  - name: marketplace-dependencies
+    rules:
+      - alert: VirusScannerUnavailable
+        expr: increase(marketplace_images_uploads_total{outcome="scan_unavailable"}[10m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: Uploads are failing because ClamAV cannot be reached (uploads fail closed).
+
+      - alert: ExchangeRatesStale
+        expr: marketplace_exchange_rates_age_seconds > 4 * 86400
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: Exchange rates are older than 4 days; cross-currency filtering uses outdated rates.
+
+      - alert: ScheduledJobFailing
+        expr: increase(tasks_scheduled_execution_seconds_count{job="marketplace-backend", outcome!="SUCCESS"}[1h]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "Scheduled job {{ $labels.code_namespace }}.{{ $labels.code_function }} failed in the last hour."
+
+      - alert: SocialSyncFailing
+        expr: |
+          sum(increase(marketplace_social_syncs_total{outcome="failure"}[1d]))
+            > 0.5 * sum(increase(marketplace_social_syncs_total[1d]))
+        labels:
+          severity: warning
+        annotations:
+          summary: More than half of the daily audience syncs failed; check provider credentials and quotas.
+
+  - name: marketplace-security
+    rules:
+      - alert: LoginFailureSpike
+        expr: sum(rate(marketplace_auth_logins_total{outcome=~"bad_credentials|locked"}[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: More than one failed login per second for 5 minutes, a possible credential-stuffing attack.
+
+      - alert: InfectedUploads
+        expr: increase(marketplace_images_uploads_total{outcome="infected"}[1h]) > 3
+        labels:
+          severity: warning
+        annotations:
+          summary: Several infected files were uploaded in the last hour; check the logs for the uploader ids.

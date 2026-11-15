@@ -1,0 +1,1240 @@
+{
+  "uid": "marketplace-overview",
+  "title": "Advertising Marketplace",
+  "tags": [
+    "marketplace"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "row",
+      "title": "Overview",
+      "id": 1,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Requests / s",
+      "id": 2,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_server_requests_seconds_count{job=\"marketplace-backend\", uri!~\"/actuator.*|/livez|/readyz|/api/v1/conversations/events|/ws.*\"}[5m]))",
+          "instant": false
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "5xx ratio",
+      "id": 3,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.01
+              },
+              {
+                "color": "red",
+                "value": 0.05
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum(rate(http_server_requests_seconds_count{job=\"marketplace-backend\", uri!~\"/actuator.*|/livez|/readyz|/api/v1/conversations/events|/ws.*\", status=~\"5..\"}[5m])) or vector(0)) / sum(rate(http_server_requests_seconds_count{job=\"marketplace-backend\", uri!~\"/actuator.*|/livez|/readyz|/api/v1/conversations/events|/ws.*\"}[5m]))",
+          "instant": false
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "p95 latency",
+      "id": 4,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.5
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 3
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"marketplace-backend\", uri!~\"/actuator.*|/livez|/readyz|/api/v1/conversations/events|/ws.*\"}[5m])))",
+          "instant": false
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Open live streams",
+      "id": 5,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(marketplace_realtime_sse_connections{job=\"marketplace-backend\"})",
+          "instant": false
+        }
+      ],
+      "description": "Server-sent event streams open across instances."
+    },
+    {
+      "type": "row",
+      "title": "HTTP",
+      "id": 6,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests by status",
+      "id": 7,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (status) (rate(http_server_requests_seconds_count{job=\"marketplace-backend\", uri!~\"/actuator.*|/livez|/readyz|/api/v1/conversations/events|/ws.*\"}[5m]))",
+          "legendFormat": "{{status}}",
+          "exemplar": false
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "p95 latency by endpoint",
+      "id": 8,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(8, histogram_quantile(0.95, sum by (le, method, uri) (rate(http_server_requests_seconds_bucket{job=\"marketplace-backend\", uri!~\"/actuator.*|/livez|/readyz|/api/v1/conversations/events|/ws.*\"}[5m]))))",
+          "legendFormat": "{{method}} {{uri}}",
+          "exemplar": true
+        }
+      ],
+      "description": "Diamonds are exemplars: click one to open that request's trace in Tempo."
+    },
+    {
+      "type": "timeseries",
+      "title": "Errors by endpoint",
+      "id": 9,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          },
+          "noValue": "No errors"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(8, sum by (method, uri, status) (rate(http_server_requests_seconds_count{job=\"marketplace-backend\", uri!~\"/actuator.*|/livez|/readyz|/api/v1/conversations/events|/ws.*\", status=~\"4..|5..\"}[5m])))",
+          "legendFormat": "{{status}} {{method}} {{uri}}",
+          "exemplar": false
+        }
+      ]
+    },
+    {
+      "type": "row",
+      "title": "Marketplace",
+      "id": 10,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Deal lifecycle",
+      "id": 11,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 15
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (event) (increase(marketplace_deals_events_total{job=\"marketplace-backend\"}[1h]))",
+          "legendFormat": "{{event}}",
+          "exemplar": false
+        }
+      ],
+      "description": "Events per hour."
+    },
+    {
+      "type": "timeseries",
+      "title": "Offers",
+      "id": 12,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 15
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(marketplace_offers_sent_total{job=\"marketplace-backend\"}[1h]))",
+          "legendFormat": "sent",
+          "exemplar": false
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (status) (increase(marketplace_offers_decisions_total{job=\"marketplace-backend\"}[1h]))",
+          "legendFormat": "{{status}}",
+          "exemplar": false
+        }
+      ],
+      "description": "Per hour."
+    },
+    {
+      "type": "timeseries",
+      "title": "Messages sent",
+      "id": 13,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 15
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (type) (rate(marketplace_messages_sent_total{job=\"marketplace-backend\"}[5m])) * 60",
+          "legendFormat": "{{type}}",
+          "exemplar": false
+        }
+      ],
+      "description": "Per minute."
+    },
+    {
+      "type": "timeseries",
+      "title": "Image uploads by outcome",
+      "id": 14,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 23
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (outcome) (increase(marketplace_images_uploads_total{job=\"marketplace-backend\"}[1h]))",
+          "legendFormat": "{{outcome}}",
+          "exemplar": false
+        }
+      ],
+      "description": "Per hour. 'infected' and 'scan_unavailable' have alerts."
+    },
+    {
+      "type": "timeseries",
+      "title": "Logins by outcome",
+      "id": 15,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 23
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (outcome) (rate(marketplace_auth_logins_total{job=\"marketplace-backend\"}[5m])) * 60",
+          "legendFormat": "{{outcome}}",
+          "exemplar": false
+        }
+      ],
+      "description": "Per minute. A sustained rise in bad_credentials or locked suggests credential stuffing."
+    },
+    {
+      "type": "timeseries",
+      "title": "Reviews by rating",
+      "id": 16,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 23
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (rating) (increase(marketplace_reviews_submitted_total{job=\"marketplace-backend\"}[1d]))",
+          "legendFormat": "{{rating}} stars",
+          "exemplar": false
+        }
+      ],
+      "description": "Per day."
+    },
+    {
+      "type": "row",
+      "title": "Dependencies and jobs",
+      "id": 17,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "ClamAV scan latency",
+      "id": 18,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 32
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(marketplace_images_scan_seconds_bucket{job=\"marketplace-backend\"}[5m])))",
+          "legendFormat": "p50",
+          "exemplar": true
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(marketplace_images_scan_seconds_bucket{job=\"marketplace-backend\"}[5m])))",
+          "legendFormat": "p95",
+          "exemplar": true
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "S3 upload latency (avg)",
+      "id": 19,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 32
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(marketplace_images_store_seconds_sum{job=\"marketplace-backend\"}[5m])) / sum(rate(marketplace_images_store_seconds_count{job=\"marketplace-backend\"}[5m]))",
+          "legendFormat": "avg",
+          "exemplar": false
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Scheduled jobs",
+      "id": 20,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 32
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (code_namespace, code_function, outcome) (increase(tasks_scheduled_execution_seconds_count{job=\"marketplace-backend\"}[1h]))",
+          "legendFormat": "{{code_namespace}}.{{code_function}} {{outcome}}",
+          "exemplar": false
+        }
+      ],
+      "description": "Runs per hour: deal auto-approval, social sync, exchange rates, cleanups.",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "com\\.advertisingmarketplace\\.(?:[a-z]+\\.)*([A-Za-z]+\\.[a-zA-Z]+ [A-Z_]+)",
+            "renamePattern": "$1"
+          }
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Exchange rates age",
+      "id": 21,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 40
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 259200
+              },
+              {
+                "color": "red",
+                "value": 345600
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(marketplace_exchange_rates_age_seconds{job=\"marketplace-backend\"})",
+          "instant": false
+        }
+      ],
+      "description": "ECB publishes on working days, so up to 3 days is normal over a weekend."
+    },
+    {
+      "type": "stat",
+      "title": "Social syncs failed (24h)",
+      "id": 22,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 40
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(marketplace_social_syncs_total{job=\"marketplace-backend\", outcome!=\"success\"}[1d])) or vector(0)",
+          "instant": false
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Exchange rate refresh failures (24h)",
+      "id": 23,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 40
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(marketplace_exchange_rates_refreshes_total{job=\"marketplace-backend\", outcome=\"failure\"}[1d])) or vector(0)",
+          "instant": false
+        }
+      ]
+    },
+    {
+      "type": "row",
+      "title": "JVM and database",
+      "id": 24,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Heap used",
+      "id": 25,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 45
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (instance) (jvm_memory_used_bytes{job=\"marketplace-backend\", area=\"heap\"})",
+          "legendFormat": "{{instance}} used",
+          "exemplar": false
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (instance) (jvm_memory_max_bytes{job=\"marketplace-backend\", area=\"heap\"})",
+          "legendFormat": "{{instance}} max",
+          "exemplar": false
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "DB connection pool",
+      "id": 26,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 45
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(hikaricp_connections_active{job=\"marketplace-backend\"})",
+          "legendFormat": "active",
+          "exemplar": false
+        },
+        {
+          "refId": "B",
+          "expr": "sum(hikaricp_connections_idle{job=\"marketplace-backend\"})",
+          "legendFormat": "idle",
+          "exemplar": false
+        },
+        {
+          "refId": "C",
+          "expr": "sum(hikaricp_connections_pending{job=\"marketplace-backend\"})",
+          "legendFormat": "pending",
+          "exemplar": false
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU and threads",
+      "id": 27,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 45
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(process_cpu_usage{job=\"marketplace-backend\"})",
+          "legendFormat": "process cpu",
+          "exemplar": false
+        },
+        {
+          "refId": "B",
+          "expr": "avg(system_cpu_usage{job=\"marketplace-backend\"})",
+          "legendFormat": "system cpu",
+          "exemplar": false
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "title": "Traces",
+      "type": "link",
+      "url": "/explore?left=%7B%22datasource%22:%22tempo%22%7D",
+      "icon": "external link"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 760px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.identityName {
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.toggle input {
+  margin-top: 3px;
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+
+.toggle > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggleTitle {
+  font-weight: 500;
+}
+
+.toggleText {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.blockList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.blockItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.blockItem + .blockItem {
+  border-top: 1px solid var(--border);
+}
+
+.blockWho {
+  flex: 1;
+  font-size: var(--text-sm);
+}
+
+.notice {
+  margin-bottom: 12px;
+}
+
+.warning {
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  color: var(--warning);
+}
+
+.accountRows {
+  display: flex;
+  flex-direction: column;
+}
+
+.accountRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.accountRow + .accountRow {
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .accountRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

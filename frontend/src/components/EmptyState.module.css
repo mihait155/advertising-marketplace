@@ -1,0 +1,47 @@
+.empty {
+  padding: 48px 24px;
+  text-align: center;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+}
+
+.title {
+  font-weight: 600;
+}
+
+.description {
+  margin: 6px auto 0;
+  max-width: 44ch;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.action {
+  margin-top: 16px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

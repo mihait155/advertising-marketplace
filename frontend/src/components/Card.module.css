@@ -1,0 +1,32 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.padded {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: var(--text-md);
+}
+
+.description {
+  margin-top: 2px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}

@@ -1,0 +1,146 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: marketplace-postgres
+    environment:
+      POSTGRES_DB: marketplace
+      POSTGRES_USER: marketplace
+      POSTGRES_PASSWORD: marketplace
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketplace -d marketplace"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  s3mock:
+    image: adobe/s3mock:4.7.0
+    container_name: marketplace-s3mock
+    environment:
+      COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: marketplace-images
+      COM_ADOBE_TESTING_S3MOCK_STORE_RETAIN_FILES_ON_EXIT: "true"
+    ports:
+      - "9090:9090"
+    volumes:
+      - s3mock-data:/s3mockroot
+
+  clamav:
+    image: clamav/clamav:1.4
+    container_name: marketplace-clamav
+    ports:
+      - "3310:3310"
+    volumes:
+      - clamav-db:/var/lib/clamav
+    healthcheck:
+      test: ["CMD-SHELL", "echo PING | nc -w 2 localhost 3310 | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    container_name: marketplace-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  backend:
+    profiles: ["app"]
+    build: ./backend
+    container_name: marketplace-backend
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/marketplace
+      DB_USERNAME: marketplace
+      DB_PASSWORD: marketplace
+      JWT_SECRET: ${JWT_SECRET:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      S3_ENDPOINT: http://s3mock:9090
+      S3_PUBLIC_ENDPOINT: http://localhost:9090
+      CLAMAV_HOST: clamav
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      TRACING_EXPORT_ENABLED: ${TRACING_EXPORT_ENABLED:-false}
+      OTLP_TRACING_ENDPOINT: http://tempo:4318/v1/traces
+    ports:
+      - "8080:8080"
+      - "127.0.0.1:8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      s3mock:
+        condition: service_started
+      clamav:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  frontend:
+    profiles: ["app"]
+    build: ./frontend
+    container_name: marketplace-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  prometheus:
+    profiles: ["observability"]
+    image: prom/prometheus:v3.5.0
+    container_name: marketplace-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --enable-feature=exemplar-storage
+      - --storage.tsdb.retention.time=7d
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "9091:9090"
+
+  tempo:
+    profiles: ["observability"]
+    image: grafana/tempo:2.8.2
+    container_name: marketplace-tempo
+    command: ["-config.file=/etc/tempo.yml"]
+    user: "0"
+    volumes:
+      - ./observability/tempo/tempo.yml:/etc/tempo.yml:ro
+      - tempo-data:/var/tempo
+    ports:
+      - "4318:4318"
+
+  grafana:
+    profiles: ["observability"]
+    image: grafana/grafana:12.1.1
+    container_name: marketplace-grafana
+    environment:
+      # Local dev only: anonymous Admin with no login. Keep the port bound to localhost.
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/marketplace.json
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "127.0.0.1:3001:3000"
+    depends_on:
+      - prometheus
+      - tempo
+
+volumes:
+  prometheus-data:
+  tempo-data:
+  postgres-data:
+  s3mock-data:
+  clamav-db:

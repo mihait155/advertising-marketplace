@@ -1,0 +1,517 @@
+.layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  height: calc(100vh - var(--nav-height) - 64px);
+  min-height: 480px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--border);
+}
+
+.sidebarHeader {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.heading {
+  font-size: var(--text-lg);
+}
+
+.sidebarNotice,
+.sidebarEmpty {
+  padding: 16px 18px;
+}
+
+.sidebarEmpty {
+  font-size: var(--text-sm);
+}
+
+.emptyTitle {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.conversations {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+}
+
+.conversation {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+
+.conversation:hover {
+  background: var(--surface-muted);
+  text-decoration: none;
+}
+
+.activeConversation,
+.activeConversation:hover {
+  background: var(--surface-sunken);
+}
+
+.conversationBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.conversationTop,
+.conversationBottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.conversationName {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.unreadName {
+  font-weight: 650;
+}
+
+.conversationTime {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+.conversationPosting {
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview {
+  margin-top: 2px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.systemPreview {
+  font-style: italic;
+}
+
+.unreadCount {
+  flex-shrink: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+
+.threadPane {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.placeholder {
+  margin: auto;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.threadHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.backButton {
+  display: none;
+  padding: 6px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.threadWho {
+  flex: 1;
+  min-width: 0;
+}
+
+.threadName {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.threadType {
+  font-size: var(--text-xs);
+  font-weight: 400;
+  color: var(--text-subtle);
+}
+
+.threadPosting {
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.threadBadges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 18px 8px;
+  background: var(--surface-muted);
+}
+
+.loadEarlier {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.threadEmpty {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--text-subtle);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.day {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0 8px;
+}
+
+.day span {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-subtle);
+}
+
+.system {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 8px;
+  margin: 10px auto;
+  max-width: 80%;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.system time {
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+.row {
+  display: flex;
+  margin-top: 12px;
+}
+
+.grouped {
+  margin-top: 3px;
+}
+
+.own {
+  justify-content: flex-end;
+}
+
+.bubbleWrap {
+  max-width: min(70%, 560px);
+  display: flex;
+  flex-direction: column;
+}
+
+.own .bubbleWrap {
+  align-items: flex-end;
+}
+
+.sender {
+  margin: 0 0 3px 2px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.bubble {
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+
+.own .bubble {
+  background: var(--accent-soft);
+  border-color: #cfe3d8;
+}
+
+.deleted,
+.own .deleted {
+  background: transparent;
+  border-style: dashed;
+  color: var(--text-subtle);
+  font-style: italic;
+}
+
+.text {
+  white-space: pre-wrap;
+}
+
+.attachments {
+  display: grid;
+  grid-template-columns: repeat(2, 120px);
+  gap: 4px;
+  margin: 2px 0 6px;
+}
+
+.single {
+  grid-template-columns: minmax(0, 260px);
+}
+
+.attachments img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--surface-sunken);
+}
+
+.single img {
+  aspect-ratio: auto;
+  max-height: 260px;
+}
+
+.messageMeta {
+  display: flex;
+  gap: 8px;
+  margin-top: 3px;
+  padding: 0 2px;
+  font-size: 11px;
+  color: var(--text-subtle);
+}
+
+.grouped .messageMeta {
+  display: none;
+}
+
+.grouped:hover .messageMeta,
+.grouped:focus-within .messageMeta,
+.row:last-child .messageMeta {
+  display: flex;
+}
+
+.messageActions {
+  display: inline-flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.row:hover .messageActions,
+.row:focus-within .messageActions {
+  opacity: 1;
+}
+
+.messageActions button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.messageActions button:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.editBox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 280px;
+}
+
+.editActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.typing {
+  height: 22px;
+  padding: 2px 18px 0;
+  background: var(--surface-muted);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.composer {
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.composerNotice {
+  margin-bottom: 8px;
+}
+
+.composerRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  min-height: 36px;
+  max-height: 180px;
+  padding: 8px 11px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  line-height: 1.45;
+  resize: none;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+
+.pending {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pendingItem {
+  position: relative;
+}
+
+.pendingItem img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.pendingItem button {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.composerDisabled {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.reportQuote {
+  margin: 0;
+  padding: 8px 12px;
+  border-left: 3px solid var(--border-strong);
+  background: var(--surface-muted);
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+    height: calc(100vh - 140px);
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin: -24px -16px -48px;
+  }
+
+  .hasThread .sidebar {
+    display: none;
+  }
+
+  .layout:not(.hasThread) .threadPane {
+    display: none;
+  }
+
+  .sidebar {
+    border-right: none;
+  }
+
+  .backButton {
+    display: inline-flex;
+  }
+
+  .threadBadges :global(span) {
+    display: none;
+  }
+
+  .bubbleWrap {
+    max-width: 85%;
+  }
+}
